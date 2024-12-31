@@ -51,7 +51,7 @@ def run_query(
             docs,
             model_name="mixtral:latest",
             openai_api_key="ollama",
-            base_url="http://localhost:11434/v1",
+            openai_url="http://localhost:11434/v1",
             temperature=temperature,
         )
     st.write("Querying the document...")
