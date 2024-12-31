@@ -22,11 +22,11 @@ def summarize_document(
         if not openai_api_key:
             raise ValueError("API key not found! Please ensure it is set in the .env file.")
 
-        # Initialize the LLM with the OpenAI API key
+        # Initialize the LLM with the OpenAI API configuration
         llm = ChatOpenAI(
             temperature=temperature,
             model_name=model_name,
-            openai_api_key=openai_api_key,  # Pass API key explicitly
+            openai_api_key=openai_api_key,  # Pass the API key explicitly
         )
 
         # Define the prompt template
@@ -52,7 +52,7 @@ def summarize_document(
         return result["output_text"]
 
     except requests.exceptions.ConnectionError as e:
-        return f"Connection error: {e}"  # Add a proper return statement
+        return f"Connection error: {e}"
 
     except Exception as e:
-        return f"An unexpected error occurred: {e}"  # Ensure exceptions are logged and returned
+        return f"An unexpected error occurred: {e}"
