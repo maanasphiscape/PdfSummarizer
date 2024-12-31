@@ -21,7 +21,7 @@ def query_document(
     llm = ChatOpenAI(
         temperature=temperature,
         model_name=model_name,
-        api_key=openai_api_key,
+        openai_api_key=openai_api_key,
         base_url=base_url,
     )
     chain = get_map_reduce_chain(llm, user_query=user_query)
