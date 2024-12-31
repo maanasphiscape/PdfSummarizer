@@ -1,5 +1,5 @@
 import os
-import requests
+from ollama import MistralClient
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 from langchain.chains.llm import LLMChain
 from langchain_core.documents.base import Document
@@ -12,16 +12,13 @@ load_dotenv()
 def summarize_document(
     docs: list[Document],
     model_name: str,
-    base_url: str,
     temperature: float = 0.1,
 ) -> str:
     try:
-        # Retrieve the OpenAI API key (or any key for Ollama)
-        openai_api_key = os.getenv("OPENAI_API_KEY")
-        if not openai_api_key:
-            raise ValueError("API key not found! Please ensure it is set in the .env file.")
+        # Initialize the Ollama model client
+        llm = MistralClient()  # API key is fetched from the environment variable
 
-        # Prepare the prompt template for summarization
+        # Define the prompt template for summarization
         prompt_template = """Write a long summary of the following document. 
         Only include information that is part of the document. 
         Do not include your own opinion or analysis.
@@ -31,25 +28,17 @@ def summarize_document(
         Summary:"""
         prompt = PromptTemplate.from_template(prompt_template)
 
-        # Make a request to the Ollama API (replace OpenAI API call)
-        headers = {"Authorization": f"Bearer {openai_api_key}"}
-        payload = {
-            "model": model_name,
-            "temperature": temperature,
-            "prompt": prompt.format(document=" ".join([doc.page_content for doc in docs])),
-        }
+        # Create LLM chain with the provided prompt
+        llm_chain = LLMChain(llm=llm, prompt=prompt)
 
-        # Request the summarization from Ollama
-        response = requests.post(f"{base_url}/chat/completions", json=payload, headers=headers)
+        # Combine the documents using StuffDocumentsChain
+        stuff_chain = StuffDocumentsChain(
+            llm_chain=llm_chain, document_variable_name="document"
+        )
 
-        if response.status_code == 200:
-            # Return the summarized text from the response
-            return response.json()["choices"][0]["message"]["content"]
-        else:
-            raise ValueError(f"Error: {response.status_code}, {response.text}")
-
-    except requests.exceptions.ConnectionError as e:
-        return f"Connection error: {e}"
+        # Run the chain and get the result
+        result = stuff_chain.invoke(docs)
+        return result["output_text"]
 
     except Exception as e:
         return f"An unexpected error occurred: {e}"
