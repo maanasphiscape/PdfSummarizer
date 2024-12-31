@@ -1,3 +1,5 @@
+ollama
+mixtral
 streamlit
 PyPDF
 nltk
