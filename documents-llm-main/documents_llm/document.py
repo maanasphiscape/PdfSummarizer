@@ -1,6 +1,16 @@
 from pathlib import Path
 
-from langchain_community.document_loaders.pdf import PyPDFLoader
+#from langchain_community.document_loaders.pdf import PyPDFLoader
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
+try:
+    from langchain_community.document_loaders.pdf import PyPDFLoader
+except ImportError as e:
+    logging.error("Error importing PyPDFLoader from langchain_community: %s", e)
+    raise
+
 from langchain_community.document_loaders.text import TextLoader
 from langchain_core.documents.base import Document
 
