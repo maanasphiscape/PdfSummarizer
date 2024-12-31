@@ -14,8 +14,7 @@ load_dotenv()
 logging.basicConfig(level=logging.DEBUG)
 
 def save_uploaded_file(
-    uploaded_file: "UploadedFile", output_dir: Path = Path("/tmp")
-) -> Path:
+    uploaded_file: "UploadedFile", output_dir: Path = Path("/tmp")) -> Path:
     output_path = Path(output_dir) / uploaded_file.name
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "wb") as f:
