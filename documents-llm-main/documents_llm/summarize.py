@@ -1,13 +1,13 @@
+import os
+import requests
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 from langchain.chains.llm import LLMChain
 from langchain_core.documents.base import Document
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
-import os
 from dotenv import load_dotenv
-import requests
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
 def summarize_document(
@@ -22,11 +22,11 @@ def summarize_document(
         if not openai_api_key:
             raise ValueError("API key not found! Please ensure it is set in the .env file.")
 
-        # Initialize the LLM with the OpenAI API configuration
+        # Initialize the LLM (Language Model)
         llm = ChatOpenAI(
             temperature=temperature,
             model_name=model_name,
-            openai_api_key=openai_api_key,  # Pass the API key explicitly
+            openai_api_key=openai_api_key  # Pass API key explicitly
         )
 
         # Define the prompt template
