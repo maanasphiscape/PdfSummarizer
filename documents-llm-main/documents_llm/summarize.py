@@ -5,18 +5,27 @@ from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 import openai
 import requests
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 def summarize_document(
     docs: list[Document],
     model_name: str,
-    openai_api_key: str,
     base_url: str,
     temperature: float = 0.1,
 ) -> str:
     try:
-        # Set the OpenAI API base URL globally
-        openai.api_base = base_url  # Set base URL globally if needed
-        openai.api_key = openai_api_key  # Set API key globally
+        # Retrieve the OpenAI API key from the environment
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        if not openai_api_key:
+            raise ValueError("API key not found! Please ensure it is set in the .env file.")
+
+        # Set the OpenAI API base URL and API key globally
+        openai.api_base = base_url
+        openai.api_key = openai_api_key
 
         # Initialize the LLM with the OpenAI API configuration
         llm = ChatOpenAI(
