@@ -8,7 +8,7 @@ from langchain_openai import ChatOpenAI
 def summarize_document(
     docs: list[Document],
     model_name: str,
-    openai_api_key: str,
+    #openai_api_key: str,
     base_url: str,
     temperature: float = 0.1,
 ) -> str:
