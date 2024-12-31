@@ -15,7 +15,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_URL = os.getenv("OPENAI_URL")
 
 
-st.title("🐍 VCF Document Analyzer")
+st.title("Document Analyzer")
 st.write(
     "This is a simple document analyzer that uses LLM models to summarize and answer questions about documents. "
     "You can upload a PDF or text file and the model will summarize the document and answer questions about it."
