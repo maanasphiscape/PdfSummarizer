@@ -1,24 +1,17 @@
+import os
+import logging
 from pathlib import Path
 import streamlit as st
-import logging
 from dotenv import load_dotenv
-import os
+from .document import load_pdf
+from .query import query_document
+from .summarize import summarize_document
 
 # Load environment variables
 load_dotenv()
 
 # Initialize logger
 logging.basicConfig(level=logging.DEBUG)
-
-try:
-    from .document import load_pdf
-except ImportError as e:
-    logging.error("Error importing 'load_pdf' from document: %s", e)
-    raise
-
-from .query import query_document
-from .summarize import summarize_document
-
 
 def save_uploaded_file(
     uploaded_file: "UploadedFile", output_dir: Path = Path("/tmp")
@@ -38,15 +31,14 @@ def run_query(
     end_page: int,
     model_name: str,
     temperature: float,
-    openai_api_key: str = None,  # Accept API key explicitly (optional)
 ) -> str:
     try:
-        # Use the passed API key if provided, otherwise retrieve from environment
-        openai_api_key = openai_api_key or os.getenv("OPENAI_API_KEY")
+        # Retrieve API settings from environment
+        openai_api_key = os.getenv("OPENAI_API_KEY")
         base_url = os.getenv("BASE_URL", "http://localhost:11434/v1")  # Default fallback
 
         if not openai_api_key:
-            raise ValueError("Missing OpenAI API Key. Ensure it's set in the environment or passed as an argument.")
+            raise ValueError("Missing OpenAI API Key. Ensure it's set in the environment.")
 
         st.write("Saving the uploaded file...")
         file_path = save_uploaded_file(uploaded_file, output_dir=Path("/tmp"))
