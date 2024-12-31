@@ -3,7 +3,7 @@ from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 from langchain.chains.llm import LLMChain
 from langchain_core.documents.base import Document
 from langchain_core.prompts import PromptTemplate
-from mistral_nemo import NemoClient  # Correct client for Nemo models
+from mistral-nemo import NemoClient  # Correct client for Nemo models
 from dotenv import load_dotenv
 
 # Load environment variables
