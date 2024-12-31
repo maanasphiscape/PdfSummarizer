@@ -50,7 +50,7 @@ def run_query(
         return summarize_document(
             docs,
             model_name="mixtral:latest",
-            api_key="ollama",
+            openai_api_key="ollama",
             base_url="http://localhost:11434/v1",
             temperature=temperature,
         )
@@ -59,7 +59,7 @@ def run_query(
         docs,
         user_query=user_query,
         model_name="mixtral:latest",
-        api_key="ollama",
+        openai_api_key="ollama",
         base_url="http://localhost:11434/v1",
         temperature=temperature,
     )
