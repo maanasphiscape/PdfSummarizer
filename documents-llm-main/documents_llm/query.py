@@ -5,7 +5,10 @@ from langchain.chains.llm import LLMChain
 from langchain_core.documents.base import Document
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
+from ollama import MistralClient
 
+def query_document(document):
+    
 
 def query_document(
     docs: list[Document],
@@ -18,12 +21,13 @@ def query_document(
     pass
 
     # Define LLM chain
-    llm = ChatOpenAI(
-        temperature=temperature,
-        model_name=model_name,
-        openai_api_key=openai_api_key,
-        base_url=base_url,
-    )
+    llm = MistralClient(api_key=ollama_api_key)
+    #llm = ChatOpenAI(
+        #temperature=temperature,
+        #model_name=model_name,
+        #openai_api_key=openai_api_key,
+        #base_url=base_url,
+    #)
     chain = get_map_reduce_chain(llm, user_query=user_query)
 
     result = chain.invoke(docs)
