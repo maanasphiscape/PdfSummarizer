@@ -23,7 +23,7 @@ def summarize_document(
             raise ValueError("API key not found! Please ensure it is set in the .env file.")
 
         # Set the OpenAI API base URL globally (if needed)
-        os.environ["OPENAI_API_BASE"] = base_url
+        #os.environ["OPENAI_API_BASE"] = base_url
 
         # Initialize the LLM with the OpenAI API key
         llm = ChatOpenAI(
