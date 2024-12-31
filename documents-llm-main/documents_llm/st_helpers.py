@@ -49,17 +49,17 @@ def run_query(
         st.write("Summarizing the document...")
         return summarize_document(
             docs,
-            model_name=model_name,
-            openai_api_key=openai_api_key,
-            base_url=openai_url,
+            model_name="mixtral:latest",
+            api_key="ollama",
+            base_url="http://localhost:11434/v1",
             temperature=temperature,
         )
     st.write("Querying the document...")
     return query_document(
         docs,
         user_query=user_query,
-        model_name=model_name,
-        openai_api_key=openai_api_key,
-        base_url=openai_url,
+        model_name="mixtral:latest",
+        api_key="ollama",
+        base_url="http://localhost:11434/v1",
         temperature=temperature,
     )
