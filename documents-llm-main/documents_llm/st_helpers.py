@@ -1,11 +1,10 @@
 from pathlib import Path
-
 import streamlit as st
-
-# from .document import load_pdf
 import logging
+from dotenv import load_dotenv
 
-logging.basicConfig(level=logging.DEBUG)
+# Load environment variables
+load_dotenv()
 
 try:
     from .document import load_pdf
@@ -34,8 +33,6 @@ def run_query(
     start_page: int,
     end_page: int,
     model_name: str,
-    openai_api_key: str,
-    openai_url: str,
     temperature: float,
 ) -> str:
     # Saves the uploaded file to a temporary location, loads the PDF, and deletes the file
@@ -49,17 +46,15 @@ def run_query(
         st.write("Summarizing the document...")
         return summarize_document(
             docs,
-            model_name="mixtral:latest",
-            openai_api_key="ollama",
-            base_url="http://localhost:11434/v1",
+            model_name=model_name,
+            base_url="http://localhost:11434/v1",  # Set default base URL
             temperature=temperature,
         )
     st.write("Querying the document...")
     return query_document(
         docs,
         user_query=user_query,
-        model_name="mixtral:latest",
-        openai_api_key="ollama",
-        base_url="http://localhost:11434/v1",
+        model_name=model_name,
+        base_url="http://localhost:11434/v1",  # Set default base URL
         temperature=temperature,
     )
