@@ -1,28 +1,33 @@
+import openai
+import os  # To access environment variables
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 from langchain.chains.llm import LLMChain
 from langchain_core.documents.base import Document
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
-import openai
 import requests
+
+# Retrieve the OpenAI API key from the environment variable
+openai_api_key = os.getenv("OPENAI_API_KEY")
+
+if not openai_api_key:
+    raise ValueError("API key not found! Please set the OPENAI_API_KEY environment variable.")
+
+# Optionally set the OpenAI API base URL globally
+openai.api_key = openai_api_key  # Set the API key globally for OpenAI SDK
+openai.api_base = "https://api.openai.com/v1"  # Optional if you want a custom base URL
 
 def summarize_document(
     docs: list[Document],
     model_name: str,
-    openai_api_key: str,
-    base_url: str,
     temperature: float = 0.1,
 ) -> str:
     try:
-        # Set the OpenAI API key and base URL globally (optional, can be done in the environment too)
-        openai.api_key = openai_api_key
-        openai.api_base = base_url  # Optional if you want to use a custom base URL
-
-        # Initialize the LLM with the OpenAI API configuration
+        # Initialize the LLM with the OpenAI API key set globally
         llm = ChatOpenAI(
             temperature=temperature,
             model_name=model_name,
-            openai_api_key=openai_api_key,  # Pass the API key here
+            openai_api_key=openai_api_key,  # The API key is set globally, but you can still pass it if necessary
         )
 
         # Define the prompt template
@@ -51,4 +56,4 @@ def summarize_document(
         return f"Connection error: {e}"
 
     except Exception as e:
-        return f"An unexpected error occurred: {e}"
+        return f"An 
