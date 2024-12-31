@@ -17,9 +17,9 @@ def summarize_document(
     # Define LLM chain
     llm = ChatOpenAI(
         temperature=temperature,
-        model_name=model_name,
-        api_key=openai_api_key,
-        base_url=base_url,
+        model_name="mixtral:latest",
+        api_key="ollama",
+        base_url="http://localhost:11434/v1",
     )
 
     prompt_template = """Write a long summary of the following document. 
