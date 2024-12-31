@@ -2,7 +2,17 @@ from pathlib import Path
 
 import streamlit as st
 
-from .document import load_pdf
+# from .document import load_pdf
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
+try:
+    from .document import load_pdf
+except ImportError as e:
+    logging.error("Error importing 'load_pdf' from document: %s", e)
+    raise
+
 from .query import query_document
 from .summarize import summarize_document
 
