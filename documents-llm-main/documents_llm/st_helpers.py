@@ -35,7 +35,7 @@ def run_query(
     end_page: int,
     model_name: str,
     openai_api_key: str,
-    openai_url: str,
+    base_url: str,
     temperature: float,
 ) -> str:
     # Saves the uploaded file to a temporary location, loads the PDF, and deletes the file
