@@ -1,4 +1,5 @@
 streamlit
+streamlit-aggrid
 PyPDF2
 nltk
 pydantic<2.0
