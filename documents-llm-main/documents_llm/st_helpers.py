@@ -2,9 +2,13 @@ from pathlib import Path
 import streamlit as st
 import logging
 from dotenv import load_dotenv
+import os
 
 # Load environment variables
 load_dotenv()
+
+# Initialize logger
+logging.basicConfig(level=logging.DEBUG)
 
 try:
     from .document import load_pdf
@@ -35,26 +39,42 @@ def run_query(
     model_name: str,
     temperature: float,
 ) -> str:
-    # Saves the uploaded file to a temporary location, loads the PDF, and deletes the file
-    st.write("Saving the uploaded file...")
-    file_path = save_uploaded_file(uploaded_file, output_dir=Path("/tmp"))
-    st.write("Loading the document...")
-    docs = load_pdf(file_path, start_page=start_page, end_page=end_page)
-    file_path.unlink()
+    try:
+        # Retrieve API settings from environment
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        base_url = os.getenv("BASE_URL", "http://localhost:11434/v1")  # Default fallback
 
-    if summarize:
-        st.write("Summarizing the document...")
-        return summarize_document(
+        if not openai_api_key:
+            raise ValueError("Missing OpenAI API Key. Ensure it's set in the environment.")
+
+        st.write("Saving the uploaded file...")
+        file_path = save_uploaded_file(uploaded_file, output_dir=Path("/tmp"))
+        st.write("Loading the document...")
+        docs = load_pdf(file_path, start_page=start_page, end_page=end_page)
+        file_path.unlink()
+
+        if summarize:
+            st.write("Summarizing the document...")
+            return summarize_document(
+                docs,
+                model_name=model_name,
+                base_url=base_url,
+                temperature=temperature,
+            )
+
+        st.write("Querying the document...")
+        return query_document(
             docs,
+            user_query=user_query,
             model_name=model_name,
-            base_url="http://localhost:11434/v1",  # Set default base URL
+            base_url=base_url,
             temperature=temperature,
         )
-    st.write("Querying the document...")
-    return query_document(
-        docs,
-        user_query=user_query,
-        model_name=model_name,
-        base_url="http://localhost:11434/v1",  # Set default base URL
-        temperature=temperature,
-    )
+
+    except ValueError as e:
+        logging.error("Configuration Error: %s", e)
+        return f"Configuration error: {e}"
+
+    except Exception as e:
+        logging.error("An unexpected error occurred: %s", e)
+        return f"An unexpected error occurred: {e}"
