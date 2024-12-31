@@ -14,14 +14,15 @@ def summarize_document(
     temperature: float = 0.1,
 ) -> str:
     try:
-        # Set the OpenAI API base URL globally
-        openai.api_base = base_url  # Set base URL globally if needed
-        openai.api_key = openai_api_key  # Set API key globally
+        # Set the OpenAI API key and base URL globally (optional, can be done in the environment too)
+        openai.api_key = openai_api_key
+        openai.api_base = base_url  # Optional if you want to use a custom base URL
 
         # Initialize the LLM with the OpenAI API configuration
         llm = ChatOpenAI(
             temperature=temperature,
             model_name=model_name,
+            openai_api_key=openai_api_key,  # Pass the API key here
         )
 
         # Define the prompt template
