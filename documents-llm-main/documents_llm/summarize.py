@@ -3,6 +3,7 @@ from langchain.chains.llm import LLMChain
 from langchain_core.documents.base import Document
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
+import openai
 import requests
 
 def summarize_document(
@@ -13,12 +14,14 @@ def summarize_document(
     temperature: float = 0.1,
 ) -> str:
     try:
-        # Initialize the OpenAI API client
+        # Set the OpenAI API base URL globally
+        openai.api_base = base_url  # Set base URL globally if needed
+        openai.api_key = openai_api_key  # Set API key globally
+
+        # Initialize the LLM with the OpenAI API configuration
         llm = ChatOpenAI(
             temperature=temperature,
             model_name=model_name,
-            openai_api_key=openai_api_key,  # Corrected argument
-            api_base=base_url  # Use api_base instead of base_url if needed
         )
 
         # Define the prompt template
