@@ -1,0 +1,6 @@
+streamlit
+PyPDF2
+nltk
+pydantic<2.0
+langsmith==0.1.2
+langchain_community==0.0.5
