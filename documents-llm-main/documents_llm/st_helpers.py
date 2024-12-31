@@ -22,13 +22,17 @@ def save_uploaded_file(uploaded_file, output_dir: Path = Path("/tmp")) -> Path:
     return output_path
 
 def run_query(
-    uploaded_file, summarize: bool, user_query: str, start_page: int, end_page: int,
-    model_name: str, temperature: float
+    uploaded_file: "UploadedFile",
+    summarize: bool,
+    user_query: str,
+    start_page: int,
+    end_page: int,
+    model_name: str,
+    temperature: float,
 ) -> str:
     try:
-        # Retrieve API settings from environment
         openai_api_key = os.getenv("OPENAI_API_KEY")
-        base_url = os.getenv("BASE_URL", "http://localhost:11434/v1")
+        base_url = os.getenv("BASE_URL", "http://localhost:11434/v1")  # Default fallback
 
         if not openai_api_key:
             raise ValueError("Missing OpenAI API Key. Ensure it's set in the environment.")
@@ -41,23 +45,28 @@ def run_query(
 
         if summarize:
             st.write("Summarizing the document...")
-            result = query_document(
-                docs, user_query="", model_name=model_name,
-                openai_api_key=openai_api_key, base_url=base_url, temperature=temperature
+            return summarize_document(
+                docs,
+                model_name=model_name,
+                base_url=base_url,
+                temperature=temperature,
             )
 
-        else:
-            st.write("Querying the document...")
-            result = query_document(
-                docs, user_query=user_query, model_name=model_name,
-                openai_api_key=openai_api_key, base_url=base_url, temperature=temperature
-            )
-
-        return result
-
+        st.write("Querying the document...")
+        return query_document(
+            docs,
+            user_query=user_query,
+            model_name=model_name,
+            base_url=base_url,
+            temperature=temperature,
+        )
     except ValueError as e:
         logging.error("Configuration Error: %s", e)
         return f"Configuration error: {e}"
+    except Exception as e:
+        logging.error("An unexpected error occurred: %s", e)
+        return f"An unexpected error occurred: {e}"
+
 
     except Exception as e:
         logging.error("An unexpected error occurred: %s", e)
