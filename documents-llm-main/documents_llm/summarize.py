@@ -25,7 +25,7 @@ def summarize_document(
 
         # Set the OpenAI API base URL and API key globally
         openai.api_base = base_url
-        openai.api_key = openai_api_key
+        openai_api_key = openai_api_key
 
         # Initialize the LLM with the OpenAI API configuration
         llm = ChatOpenAI(
