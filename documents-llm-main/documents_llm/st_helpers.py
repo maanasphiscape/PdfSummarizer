@@ -38,14 +38,15 @@ def run_query(
     end_page: int,
     model_name: str,
     temperature: float,
+    openai_api_key: str = None,  # Accept API key explicitly (optional)
 ) -> str:
     try:
-        # Retrieve API settings from environment
-        openai_api_key = os.getenv("OPENAI_API_KEY")
+        # Use the passed API key if provided, otherwise retrieve from environment
+        openai_api_key = openai_api_key or os.getenv("OPENAI_API_KEY")
         base_url = os.getenv("BASE_URL", "http://localhost:11434/v1")  # Default fallback
 
         if not openai_api_key:
-            raise ValueError("Missing OpenAI API Key. Ensure it's set in the environment.")
+            raise ValueError("Missing OpenAI API Key. Ensure it's set in the environment or passed as an argument.")
 
         st.write("Saving the uploaded file...")
         file_path = save_uploaded_file(uploaded_file, output_dir=Path("/tmp"))
