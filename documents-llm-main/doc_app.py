@@ -7,6 +7,13 @@ from documents_llm.st_helpers import run_query
 # Load environment variables
 load_dotenv()
 
+# Debugging: print the loaded API key
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    st.error("API Key is not set. Please check the .env file.")
+else:
+    st.write(f"Loaded OpenAI API Key: {openai_api_key}")
+
 # Load model parameters
 MODEL_NAME = os.getenv("MODEL_NAME", "mixtral:latest")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
