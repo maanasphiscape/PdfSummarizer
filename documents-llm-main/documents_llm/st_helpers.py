@@ -1,10 +1,11 @@
 import os
 import logging
 from pathlib import Path
-from documents_llm.document import load_pdf
-from documents_llm.query import query_document
-from documents_llm.summarize import summarize_document
+import streamlit as st
 from dotenv import load_dotenv
+from .document import load_pdf
+from .query import query_document
+from .summarize import summarize_document
 
 # Load environment variables
 load_dotenv()
@@ -12,12 +13,15 @@ load_dotenv()
 # Initialize logger
 logging.basicConfig(level=logging.DEBUG)
 
-def save_uploaded_file(uploaded_file: "UploadedFile", output_dir: Path = Path("/tmp")) -> Path:
+def save_uploaded_file(
+    uploaded_file: "UploadedFile", output_dir: Path = Path("/tmp")
+) -> Path:
     output_path = Path(output_dir) / uploaded_file.name
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
     return output_path
+
 
 def run_query(
     uploaded_file: "UploadedFile",
@@ -29,26 +33,37 @@ def run_query(
     temperature: float,
 ) -> str:
     try:
-        openai_api_key = os.getenv("OPENAI_API_KEY")
-        base_url = os.getenv("BASE_URL", "http://localhost:5000/v1")
+        # Retrieve API settings from environment
+        ollama_api_key = os.getenv("OLLAMA_API_KEY")
+        base_url = os.getenv("OLLAMA_URL", "http://localhost:11434/v1")  # Default fallback
 
-        if not openai_api_key:
-            raise ValueError("Missing OpenAI API Key. Ensure it's set in the environment.")
+        if not ollama_api_key:
+            raise ValueError("Missing Ollama API Key. Ensure it's set in the environment.")
 
-        # Save the uploaded file
+        st.write("Saving the uploaded file...")
         file_path = save_uploaded_file(uploaded_file, output_dir=Path("/tmp"))
-        
-        # Load the document
+        st.write("Loading the document...")
         docs = load_pdf(file_path, start_page=start_page, end_page=end_page)
         file_path.unlink()
 
         if summarize:
+            st.write("Summarizing the document...")
             return summarize_document(
-                docs, model_name=model_name, base_url=base_url, temperature=temperature
+                docs,
+                model_name=model_name,
+                base_url=base_url,
+                temperature=temperature,
+                api_key=ollama_api_key,  # Pass the Ollama API Key
             )
 
+        st.write("Querying the document...")
         return query_document(
-            docs, user_query=user_query, model_name=model_name, base_url=base_url, temperature=temperature
+            docs,
+            user_query=user_query,
+            model_name=model_name,
+            base_url=base_url,
+            temperature=temperature,
+            api_key=ollama_api_key,  # Pass the Ollama API Key
         )
 
     except ValueError as e:
