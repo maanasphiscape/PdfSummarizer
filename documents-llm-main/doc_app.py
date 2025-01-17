@@ -17,13 +17,19 @@ if uploaded_file:
     st.info("Loading the PDF...")
     docs = load_pdf("temp_uploaded_file.pdf")
 
+    # Specify model details
+    model_name = "mistral-nemo:latest"  # Update if needed
+    base_url = "http://localhost:11434/v1"  # Ensure your local server is running
+
     # Summarize the document
     st.info("Summarizing the document...")
-    summary = summarize_document(docs)
-
-    # Display the summary
-    st.subheader("Summary")
-    st.write(summary)
+    try:
+        summary = summarize_document(docs, model_name=model_name, base_url=base_url)
+        # Display the summary
+        st.subheader("Summary")
+        st.write(summary)
+    except Exception as e:
+        st.error(f"Error during summarization: {str(e)}")
 
     # Remove the temporary file
     os.remove("temp_uploaded_file.pdf")
