@@ -1,71 +1,29 @@
-import argparse
-import os
-import time
-from pathlib import Path
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import PromptTemplate
+from langchain.chains.llm import LLMChain
 
-from dotenv import load_dotenv
-from rich.console import Console
-
-from documents_llm.document import load_pdf, load_text
-from documents_llm.summarize import summarize_document
-
-start = time.time()
-
-# Load environment variables
-load_dotenv()
-
-# Initialize rich console
-console = Console()
-
-# Load model parameters
-MODEL_NAME = os.getenv("MODEL_NAME")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_URL = os.getenv("OPENAI_URL")
-
-# Initialize argument parser
-parser = argparse.ArgumentParser(description="Summarize a document.")
-parser.add_argument("file", type=str, help="The file to summarize.")
-parser.add_argument(
-    "-s", "--start", type=int, default=0, help="The start page for PDF files."
+# Configure the local LLM
+llm = ChatOpenAI(
+    temperature=0.1,
+    model_name="mistral-nemo",
+    api_key="ollama",  # Placeholder API key
+    base_url="http://localhost:11434/v1",  # Local server endpoint
 )
-parser.add_argument(
-    "-e", "--end", type=int, default=-1, help="The end page for PDF files."
-)
-parser.add_argument("-t", "--temp", type=float, default=0.1, help="Temperature.")
-parser.add_argument("-m", "--model", type=str, help="Model name.", default=MODEL_NAME)
-parser.add_argument("-o", "--output", type=str, help="The output file.")
-args = parser.parse_args()
 
+# Prompt template for summarization
+prompt_template = """Write a long summary of the following document. 
+Only include information that is part of the document. 
+Do not include your own opinion or analysis.
 
-# Load document
-file_path = Path(args.file)
-console.print(f"Loading document: [blue]{file_path}[/blue]")
-if file_path.suffix == ".pdf":
-    docs = load_pdf(file_path, args.start, args.end)
-elif file_path.suffix == ".txt":
-    docs = load_text(file_path)
-else:
-    console.print(f"Unsupported file type: {file_path.suffix}", style="bold red")
-    exit(1)
+Document:
+"{document}"
+Summary:"""
+prompt = PromptTemplate.from_template(prompt_template)
 
-# Summarize document
-console.print(
-    f"Summarizing document with [green]{args.model}[/green]...", style="bold blue"
-)
-summary = summarize_document(
-    docs,
-    model_name=args.model,
-    openai_api_key=OPENAI_API_KEY,
-    base_url=OPENAI_URL,
-    temperature=args.temp,
-)
-console.print(f"Completed in : {time.time() - start:.2f} seconds\n")
+# Create the LLM chain
+llm_chain = LLMChain(llm=llm, prompt=prompt)
 
-console.print("Summary:", style="bold green")
-
-console.print(summary)
-
-# Output summary
-if args.output:
-    with open(args.output, "w") as f:
-        f.write(summary)
+def summarize_document(docs):
+    """Summarizes the content of a document."""
+    result = llm_chain.invoke(docs)
+    return result["output_text"]
